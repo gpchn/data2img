@@ -2,7 +2,12 @@
 
 [English (en-US)](README.md) | 简体中文 (zh-CN)
 
+
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+![GitHub Created At](https://img.shields.io/github/created-at/gpchn/data2img)
+![GitHub last commit](https://img.shields.io/github/last-commit/gpchn/data2img)
+![GitHub License](https://img.shields.io/github/license/gpchn/data2img)
+
 
 一个用于将数据编码为图片的 Python 脚本。
 

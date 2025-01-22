@@ -1,8 +1,13 @@
 # DATA 2 IMG
 
-English (en-US) | [Simplified Chinese (zh-CN)](README.zh-CN.md)
+English (en-US) | [简体中文 (zh-CN)](README.zh-CN.md)
+
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+![GitHub Created At](https://img.shields.io/github/created-at/gpchn/data2img)
+![GitHub last commit](https://img.shields.io/github/last-commit/gpchn/data2img)
+![GitHub License](https://img.shields.io/github/license/gpchn/data2img)
+
 
 A Python script for encoding data into images.
 
