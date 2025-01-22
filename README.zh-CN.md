@@ -44,6 +44,27 @@ $ pip install Pillow pyzstd tqdm
 
 ## 使用说明
 
+```
+usage: data2img.py [-h] (-e ENCODE | -t ENCODE_TEXT | -d DECODE | -u DECODE_URI) [-p | -o OUTPUT] [-s]
+
+将数据编码成图片，或将图片解码成数据
+
+options:
+  -h, --help            show this help message and exit
+  -e ENCODE, --encode ENCODE
+                        以 文件的二进制数据 作为原始数据
+  -t ENCODE_TEXT, --encode-text ENCODE_TEXT
+                        以 utf-8 编码后的文本 作为原始数据
+  -d DECODE, --decode DECODE
+                        以 本地图片文件 作为图片数据
+  -u DECODE_URI, --decode-uri DECODE_URI
+                        以 Data URI scheme 作为图片数据
+  -p, --print           将结果直接打印到终端（UTF-8 解码后的文本 / Base64 字符串 / Data URI scheme）        
+  -o OUTPUT, --output OUTPUT
+                        指定输出文件
+  -s, --show            存储后打开图像文件（仅在 encode 模式下生效）
+```
+
 ### 编码（encode）
 
 将数据编码为图片，数据来源可以是文件或文本。
@@ -104,7 +125,7 @@ python data2img.py -d <图片文件路径> -p
 
 请参考 [以下视频](demo.mp4) 。
 
-<video src="demo.mp4" controls width="100%"></video>
+![demo video](demo.mp4)
 
 ## 相关仓库
 
