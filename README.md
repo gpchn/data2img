@@ -16,8 +16,7 @@ This is a tool that uses Python to encode arbitrary data into PNG images or deco
 This repository contains the following:
 
 1. [data2img.py script](data2img.py): A script for encoding data into images or decoding data back from images.
-2. [code.png](code.png): A PNG image of the code.
-3. [demo.mp4](demo.mp4): A demonstration video.
+2. [demo.mp4](demo.mp4): A demonstration video.
 
 ## Table of Contents
 

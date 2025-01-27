@@ -6,6 +6,7 @@ from pathlib import Path
 
 def main() -> None:
     from argparse import ArgumentParser
+    from ziplib import zstd_compress
     from base64 import b64decode
     from math import sqrt, ceil
     from io import BytesIO
@@ -19,7 +20,7 @@ def main() -> None:
         "-e", "--encode", type=Path, help="以 文件的二进制数据 作为原始数据"
     )
     parser_input.add_argument(
-        "-t", "--encode-text", help="以 utf-8 编码后的文本 作为原始数据"
+        "-t", "--encode-text", help="以 UTF-8 编码后的文本 作为原始数据"
     )
     parser_input.add_argument(
         "-d", "--decode", type=Path, help="以 本地图片文件 作为图片数据"
@@ -49,60 +50,59 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # 数据来源：文本 / 文件
-    # 文本编码：utf-8 / ascii
-    if args.encode_text:
-        data = args.encode_text.encode("utf-8")
-    elif args.encode:
-        data = args.encode.read_bytes()
+    # encode 模式
+    if args.encode or args.encode_text:
+        # 读取数据
+        if args.encode:
+            data = args.encode.read_bytes()
+        else:
+            data = args.encode_text.encode("utf-8")
+        print("已经读取数据，正在处理中……")
 
-    elif args.decode_uri:
-        # 将 Data URI scheme 转换为虚拟文件
-        img_buffer = BytesIO(b64decode(args.decode_uri.split(",")[1]))
+        # 压缩数据
+        data = zstd_compress(data)
+        print("数据压缩完成，正在转换为像素……")
+
+        # 将 bytes 转换成 list[int]，在末尾加一个 225
+        data_int_list = [data_int for data_int in data] + [225]
+        # 获取数据长度
+        data_length = len(data_int_list)
+        print(
+            f"数据长度：{data_length - 1} Bytes"
+        )  # 减 1 是因为最后一个 225 不算在数据长度内
+        # 取平方根，向上取整
+        side_len = ceil(sqrt(data_length / 3))
+        print(f"图片尺寸：{side_len}x{side_len}")
+        # 填充数组至最近的平方数（图片是正方形）
+        data_int_list += [0] * (side_len**2 * 3 - data_length)
+        # 此时 data_length ** 2 == data_length
+
+        print("像素转换完成，正在生成图像……")
+        if args.print:
+            output = False
+        else:
+            output = args.output if args.output else Path("./out.png")
+        create_img(data_int_list, side_len, output, args.show)
+
+    # decode 模式
+    elif args.decode or args.decode_uri:
+        # 数据来源：图片
+        if args.decode:
+            img_path = args.decode
+        # 数据来源：Data URI scheme
+        # 创建一个虚拟文件对象，获取 URI 中的图片数据
+        else:
+            img_path = BytesIO(b64decode(args.decode_uri.split(",")[1]))
+
         if args.print:
             output = False
         else:
             output = args.output if args.output else Path(f"{args.decode}.out")
-        decode_img(img_buffer, output)
-        return
-        # decode 完全由 decode_img() 完成，到此为止
-    elif args.decode:
-        if args.print:
-            output = False
-        else:
-            output = args.output if args.output else Path(f"{args.decode}.out")
-        decode_img(args.decode, output)
-        return
-        # decode 完全由 decode_img() 完成，到此为止
+
+        decode_img(img_path, output)
+
     else:
         print("请指定输入方式，使用 -h 查看帮助")
-        return
-
-    print("已经读取数据，正在处理中……")
-
-    # 压缩数据
-    data = zstd_compress(data)
-    print("数据压缩完成，正在转换为像素……")
-    # 将 bytes 转换成 list[int]，在末尾加一个 225
-    data_int_list = [data_int for data_int in data] + [225]
-    # 获取数据长度
-    data_length = len(data_int_list)
-    print(
-        f"数据长度：{data_length - 1} Bytes"
-    )  # 减 1 是因为最后一个 225 不算在数据长度内
-    # 取平方根，向上取整
-    side_len = ceil(sqrt(data_length / 3))
-    print(f"图片尺寸：{side_len}x{side_len}")
-    # 填充数组至最近的平方数（图片是正方形）
-    data_int_list += [0] * (side_len**2 * 3 - data_length)
-    # 此时 data_length ** 2 == data_length
-
-    print("像素转换完成，正在生成图像……")
-    if args.print:
-        output = False
-    else:
-        output = args.output if args.output else Path("./out.png")
-    create_img(data_int_list, side_len, output, args.show)
 
 
 # 将数据转换为图片
@@ -147,6 +147,7 @@ def create_img(data: list[int], side_len: int, output: Path | None, show: bool) 
 def decode_img(img_path: Path, output: Path):
     from PIL import Image
     from tqdm import tqdm
+    from ziplib import zstd_decompress
 
     # 读取图像
     img = Image.open(img_path)
@@ -181,20 +182,6 @@ def decode_img(img_path: Path, output: Path):
             print(data.decode("utf-8"))
         except UnicodeDecodeError:
             print(b64encode(data).decode("utf-8"))
-
-
-# 用 zstd 格式压缩数据
-def zstd_compress(data: bytes) -> bytes:
-    from pyzstd import compress
-
-    return compress(data)
-
-
-# 用 zstd 格式解压数据
-def zstd_decompress(data: bytes) -> bytes:
-    from pyzstd import decompress
-
-    return decompress(data)
 
 
 if __name__ == "__main__":

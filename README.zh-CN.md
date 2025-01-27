@@ -16,8 +16,7 @@
 本仓库包含以下内容：
 
 1. [data2img.py 脚本](data2img.py)：用于将数据编码为图片或从图片解码回数据的脚本。
-2. [code.png](code.png)：代码的 PNG 图片。
-3. [demo.mp4](demo.mp4)：演示视频。
+2. [demo.mp4](demo.mp4)：演示视频。
 
 ## 内容列表
 
